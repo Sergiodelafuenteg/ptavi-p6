@@ -14,7 +14,17 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     def check_method(self, method):
         methods = ['INVITE', 'ACK', 'BYE']
         if method in methods:
-            pass
+            if method == INVITE:
+                self.data_send = "SIP 2.0 100 Trying\r\n\r\n" +
+                                "SIP 2.0 180 Ringing\r\n\r\n" +
+                                "SIP 2.0 200 OK\r\n\r\n"
+            elif method == BYE:
+                self.data_send = "SIP 2.0 200 OK\r\n\r\n"
+            elif method == ACK:
+                self.data_send = ""
+        else
+            data_send = "SIP 2.0 400 Bad request\r\n\r\n"
+        self.wfile.write(b(data_send, 'utf-8'))
 
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
