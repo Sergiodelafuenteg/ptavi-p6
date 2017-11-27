@@ -34,15 +34,13 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     def handle(self):
         """handler server."""
         data = self.rfile.read().decode('utf-8')
-        print(data.split(' '))
         metodo,sip_address,protocol = data.split(' ')
         self.check_method(metodo,protocol,sip_address)
-        print("El cliente nos manda " + metodo)
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
     if len(sys.argv) != 4:
-        sys.exit("Usage: python3 server.py ip puerto cancion")
+        sys.exit("Usage: python3 server.py IP port audio_file")
     IP = sys.argv[1]
     PORT = int(sys.argv[2])
     CANCION = (sys.argv[3])
