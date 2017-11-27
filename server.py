@@ -5,6 +5,7 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 """
 
 import socketserver
+import os
 
 
 class EchoHandler(socketserver.DatagramRequestHandler):
@@ -13,6 +14,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     """
     def check_method(self, method):
         methods = ['INVITE', 'ACK', 'BYE']
+        self.data_send = ""
         if method in methods:
             if method == 'INVITE':
                 print("gooooo")
@@ -22,11 +24,10 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             elif method == 'BYE':
                 self.data_send = "SIP 2.0 200 OK\r\n\r\n"
             elif method == 'ACK':
-                self.data_send = ""
+                os.system('mp32rtp -i 127.0.0.1 -p 23032 < ' + 'cancion.mp3')
         else:
-            data_send = "SIP 2.0 400 Bad request\r\n\r\n"
-            self.wfile.write(bytes(data_send, 'utf-8'))
-
+            self.data_send = "SIP 2.0 400 Bad request\r\n\r\n"
+        self.wfile.write(bytes(self.data_send, 'utf-8'))
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
         # Leyendo línea a línea lo que nos envía el cliente
@@ -35,6 +36,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
         metodo,sip_address,protocol = data.split(' ')
         self.check_method(metodo)
         print("El cliente nos manda " + metodo)
+        self.data_send = "kokoko"
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
