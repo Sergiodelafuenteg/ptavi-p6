@@ -10,16 +10,16 @@ import os
 class EchoHandler(socketserver.DatagramRequestHandler):
     """Echo server class."""
 
-    def check_method(self, method,protocol,sip):
+    def check_method(self, method, protocol, sip):
         """function for check the method."""
         methods = ['INVITE', 'ACK', 'BYE']
         data_send = ""
         if method in methods:
-            if (protocol =='SIP/2.0\r\n\r\n') and (sip[0:4] =='sip:'):
+            if (protocol == 'SIP/2.0\r\n\r\n') and (sip[0:4] == 'sip:'):
                 if method == 'INVITE':
                     data_send = ("SIP/2.0 100 Trying\r\n\r\n" +
-                                    "SIP/2.0 180 Ringing\r\n\r\n" +
-                                    "SIP/2.0 200 OK\r\n\r\n")
+                                "SIP/2.0 180 Ringing\r\n\r\n" +
+                                "SIP/2.0 200 OK\r\n\r\n")
                 elif method == 'BYE':
                     data_send = "SIP/2.0 200 OK\r\n\r\n"
                 elif method == 'ACK':
@@ -34,8 +34,8 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     def handle(self):
         """handler server."""
         data = self.rfile.read().decode('utf-8')
-        metodo,sip_address,protocol = data.split(' ')
-        self.check_method(metodo,protocol,sip_address)
+        metodo, sip_address, protocol = data.split(' ')
+        self.check_method(metodo, protocol, sip_address)
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
