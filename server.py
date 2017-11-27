@@ -1,45 +1,51 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Clase (y programa principal) para un servidor de eco en UDP simple
-"""
+"""Clase (y programa principal) para un servidor en UDP simple."""
 
 import socketserver
+import sys
 import os
 
 
 class EchoHandler(socketserver.DatagramRequestHandler):
-    """
-    Echo server class
-    """
-    def check_method(self, method):
+    """Echo server class."""
+
+    def check_method(self, method,protocol,sip):
+        """function for check the method."""
         methods = ['INVITE', 'ACK', 'BYE']
-        self.data_send = ""
+        data_send = ""
         if method in methods:
-            if method == 'INVITE':
-                print("gooooo")
-                self.data_send = ("SIP 2.0 100 Trying\r\n\r\n" +
-                                "SIP 2.0 180 Ringing\r\n\r\n" +
-                                "SIP 2.0 200 OK\r\n\r\n")
-            elif method == 'BYE':
-                self.data_send = "SIP 2.0 200 OK\r\n\r\n"
-            elif method == 'ACK':
-                os.system('mp32rtp -i 127.0.0.1 -p 23032 < ' + 'cancion.mp3')
+            if (protocol =='SIP/2.0\r\n\r\n') and (sip[0:4] =='sip:'):
+                if method == 'INVITE':
+                    data_send = ("SIP/2.0 100 Trying\r\n\r\n" +
+                                    "SIP/2.0 180 Ringing\r\n\r\n" +
+                                    "SIP/2.0 200 OK\r\n\r\n")
+                elif method == 'BYE':
+                    data_send = "SIP/2.0 200 OK\r\n\r\n"
+                elif method == 'ACK':
+                    os.system('mp32rtp -i 127.0.0.1 -p 23032 < ' +
+                                CANCION)
+            else:
+                data_send = "SIP/2.0 400 Bad Request\r\n\r\n"
         else:
-            self.data_send = "SIP 2.0 400 Bad request\r\n\r\n"
-        self.wfile.write(bytes(self.data_send, 'utf-8'))
+            data_send = "SIP/2.0 405 Method Not Allowed\r\n\r\n"
+        self.wfile.write(bytes(data_send, 'utf-8'))
+
     def handle(self):
-        # Escribe dirección y puerto del cliente (de tupla client_address)
-        # Leyendo línea a línea lo que nos envía el cliente
+        """handler server."""
         data = self.rfile.read().decode('utf-8')
         print(data.split(' '))
         metodo,sip_address,protocol = data.split(' ')
-        self.check_method(metodo)
+        self.check_method(metodo,protocol,sip_address)
         print("El cliente nos manda " + metodo)
-        self.data_send = "kokoko"
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
-    serv = socketserver.UDPServer(('', 6001), EchoHandler)
+    if len(sys.argv) != 4:
+        sys.exit("Usage: python3 server.py ip puerto cancion")
+    IP = sys.argv[1]
+    PORT = int(sys.argv[2])
+    CANCION = (sys.argv[3])
+    serv = socketserver.UDPServer((IP, PORT), EchoHandler)
     print("Listening...")
     serv.serve_forever()
