@@ -10,7 +10,6 @@ import sys
 
 # Dirección IP del servidor.
 
-
 try:
     _, METODO, SIP_ADDRESS = sys.argv
 
@@ -34,7 +33,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     print("Enviando:", DATA)
     my_socket.send(bytes(DATA, 'utf-8'))
     data = my_socket.recv(1024)
-    print(data.decode('utf-8'))
+    cod_answer = data.decode('utf-8').split(' ')[-2]
+    if cod_answer == '200':
+        DATA = ' '.join(["ACK", "sip:" + SIP_ADDRESS, PROTOCOL])
+        my_socket.send(bytes(DATA, 'utf-8'))
+        print(cod_answer)
     print('Recibido -- ', data.decode('utf-8'))
 
 print("Fin.")
