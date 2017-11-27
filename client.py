@@ -11,8 +11,8 @@ try:
 except IndexError:
     sys.exit('Usage: python3 client.py method receiver@IP:SIPport')
 
-SERVER,PORT = SIP_ADDRESS.split(':')
-login,SERVER = SERVER.split('@')
+SERVER, PORT = SIP_ADDRESS.split(':')
+login, SERVER = SERVER.split('@')
 PORT = int(PORT)
 METODO = METODO.upper()
 PROTOCOL = 'SIP/2.0\r\n\r\n'
